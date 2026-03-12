@@ -1,61 +1,40 @@
 import os
-import joblib
-from sklearn.metrics import classification_report, accuracy_score
-
-# Importing from your project modules
 from src.config import (
     RAW_TRAIN_PATH, RAW_TEST_PATH, 
     PROCESSED_TRAIN_PATH, PROCESSED_TEST_PATH,
-    MODEL_DIR, LABELS
+    MODEL_DIR
 )
 from src.preprocessing import preprocess_dataset
 from src.feat_engg import extract_features
 from src.train import train_model
+from src.evaluate import run_full_evaluation
 
 def run_pipeline():
-    print("--- 🚀 Starting News Classification Pipeline ---")
+    print("Starting Classification Pipeline ")
 
-    # 1.Preprocesing
+    # 1. Preprocessing
     if not os.path.exists(PROCESSED_TRAIN_PATH):
-        print(f"\n[Step 1] Preprocessing Raw Data...")
+        print("\n[Step 1] Preprocessing Raw Data...")
         preprocess_dataset(RAW_TRAIN_PATH, PROCESSED_TRAIN_PATH)
         preprocess_dataset(RAW_TEST_PATH, PROCESSED_TEST_PATH)
     else:
-        print(f"\n[Step 1] Processed data found at {PROCESSED_TRAIN_PATH}. Skipping.")
+        print("\n[Step 1] Processed data already exists.")
 
-    # 2.Feature Engineering
-    print(f"\n[Step 2] Extracting TF-IDF Features...")
+    # 2. Feature Engineering
+    print("\n[Step 2] Extracting Features...")
     X_train, X_test, y_train, y_test = extract_features(
-        PROCESSED_TRAIN_PATH, 
-        PROCESSED_TEST_PATH, 
-        MODEL_DIR
+        PROCESSED_TRAIN_PATH, PROCESSED_TEST_PATH, MODEL_DIR
     )
 
-    # 3.Training
-    print(f"\n[Step 3] Training the Linear SVM...")
-    model = train_model(X_train, y_train, MODEL_DIR)
+    # 3. Training
+    print("\n[Step 3] Training SVM Model...")
+    train_model(X_train, y_train, MODEL_DIR)
 
-    # 4.Evaluation
-    print(f"\n[Step 4] Evaluating Model Performance...")
-    predictions = model.predict(X_test)
-    
-    accuracy = accuracy_score(y_test, predictions)
-    
-    # We pull the category names directly from our config LABELS
-    target_names = [LABELS[i] for i in sorted(LABELS.keys())]
-    
-    report = classification_report(
-        y_test, 
-        predictions, 
-        target_names=target_names
-    )
-    
-    print("=" * 40)
-    print(f" FINAL ACCURACY: {accuracy * 100:.2f}%")
-    print("=" * 40)
-    print("Detailed Classification Report:")
-    print(report)
-    print(" Pipeline Execution Complete ")
+    # 4. Evaluation (Imports all text & image logic)
+    print("\n[Step 4] Running Evaluation & Generating Visuals...")
+    run_full_evaluation(PROCESSED_TEST_PATH)
+
+    print("\n--- Pipeline Success! Check the 'results/' folder. ---")
 
 if __name__ == "__main__":
     run_pipeline()

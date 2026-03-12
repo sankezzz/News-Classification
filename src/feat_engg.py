@@ -12,14 +12,11 @@ def extract_features(train_path, test_path, model_dir='models/'):
     test_df = pd.read_csv(test_path)
 
 
-
-    # Handle any potential NaNs from preprocessing
     train_df['cleaned_text'] = train_df['cleaned_text'].fillna('')
     test_df['cleaned_text'] = test_df['cleaned_text'].fillna('')
 
     print("Vectorizing text data...")
     
-    # 2. Initialize TF-IDF
     tfidf = TfidfVectorizer(max_features=5000, ngram_range=(1, 2))
 
     # 3. Fit on train, transform both

@@ -1,7 +1,7 @@
 import joblib
 import os
 from sklearn.svm import LinearSVC
-from feat_engg import extract_features
+from src.feat_engg import extract_features
 
 def train_model(X_train, y_train, model_dir='models/'):
     """
