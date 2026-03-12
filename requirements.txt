@@ -1,0 +1,13 @@
+# Data Manipulation
+pandas
+
+# Machine Learning & Metrics
+scikit-learn
+joblib
+
+# Natural Language Processing
+nltk
+
+# Visualizations
+matplotlib
+seaborn
